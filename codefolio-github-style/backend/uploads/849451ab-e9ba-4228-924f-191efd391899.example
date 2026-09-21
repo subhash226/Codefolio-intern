@@ -1,0 +1,13 @@
+PORT=4000
+JWT_SECRET=replace-this-with-a-long-random-secret
+CLIENT_ORIGIN=http://localhost:5173
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB_NAME=resume_builder
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-smtp-user@example.com
+SMTP_PASS=your-smtp-password
+SMTP_FROM="Resume Builder <no-reply@example.com>"
+OPENAI_API_KEY=replace-with-your-openai-key
+OPENAI_MODEL=gpt-4.1-mini
+

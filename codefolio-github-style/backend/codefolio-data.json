@@ -1,0 +1,260 @@
+{
+  "users": [
+    {
+      "id": "335ee6c3-9128-4a21-8dcd-dee79cb35767",
+      "name": "Publish Owner",
+      "username": "publish-1789971695588",
+      "email": "publish-1789971695588@example.com",
+      "password": "test",
+      "bio": "Developer",
+      "skills": [],
+      "introduction": "",
+      "careerGoal": "",
+      "location": "",
+      "website": "",
+      "linkedin": "",
+      "github": "",
+      "avatar": "",
+      "education": [],
+      "experience": [],
+      "certifications": [],
+      "privacy": {
+        "emailPublic": false
+      },
+      "followers": [],
+      "following": []
+    },
+    {
+      "id": "7356292f-a3ce-4fb1-85b9-aef05bf080b0",
+      "name": "Publish Viewer",
+      "username": "viewer-1789971695588",
+      "email": "viewer-1789971695588@example.com",
+      "password": "test",
+      "bio": "Developer",
+      "skills": [],
+      "introduction": "",
+      "careerGoal": "",
+      "location": "",
+      "website": "",
+      "linkedin": "",
+      "github": "",
+      "avatar": "",
+      "education": [],
+      "experience": [],
+      "certifications": [],
+      "privacy": {
+        "emailPublic": false
+      },
+      "followers": [],
+      "following": []
+    }
+  ],
+  "repositories": [
+    {
+      "id": "ee930871-c8d6-4847-98a4-5dfd42fb4b0c",
+      "owner": "publish-1789971695588",
+      "name": "Public Showcase",
+      "description": "A public project flow smoke test",
+      "visibility": "public",
+      "readme": true,
+      "readmeContent": "",
+      "technologies": [],
+      "demoUrl": "",
+      "githubUrl": "",
+      "thumbnail": "",
+      "files": [
+        {
+          "id": "a6818d56-1978-4753-941a-c3a76a9b7200",
+          "originalName": "tmp68DE.tmp",
+          "filename": "d8c60e4c-ab66-4942-aa35-9785e42a4dff.tmp",
+          "size": 50,
+          "url": "/uploads/d8c60e4c-ab66-4942-aa35-9785e42a4dff.tmp"
+        }
+      ],
+      "stars": 1,
+      "starredBy": [
+        "viewer-1789971695588"
+      ],
+      "views": 1,
+      "viewLog": {
+        "anonymous": 1789971695820
+      },
+      "published": false,
+      "status": "draft",
+      "slug": "public-showcase",
+      "publishedAt": "2026-09-21T06:21:35.815Z",
+      "createdAt": "2026-09-21T06:21:35.638Z",
+      "updatedAt": "2026-09-21T06:21:35.830Z"
+    },
+    {
+      "id": "6b24bae6-7a0e-4ddb-b03e-1b04731eeca9",
+      "owner": "m",
+      "name": "Resume builder",
+      "description": "",
+      "visibility": "public",
+      "readme": true,
+      "readmeContent": "",
+      "technologies": [],
+      "demoUrl": "",
+      "githubUrl": "",
+      "thumbnail": "",
+      "files": [
+        {
+          "id": "6d98036b-3c36-4965-b912-9ed373d63ef6",
+          "originalName": ".env",
+          "filename": "8c28a7b8-dc43-4514-a531-dc63d8b17b36",
+          "size": 242,
+          "url": "/uploads/8c28a7b8-dc43-4514-a531-dc63d8b17b36"
+        },
+        {
+          "id": "1ed47f38-84bb-4219-8707-f6fafdeebbe8",
+          "originalName": ".env.example",
+          "filename": "849451ab-e9ba-4228-924f-191efd391899.example",
+          "size": 393,
+          "url": "/uploads/849451ab-e9ba-4228-924f-191efd391899.example"
+        },
+        {
+          "id": "23270390-bf2e-4fd7-aa48-312c9140d98d",
+          "originalName": ".gitignore",
+          "filename": "28326a6a-9d2f-4f48-8c58-92e33dd05bbb",
+          "size": 299,
+          "url": "/uploads/28326a6a-9d2f-4f48-8c58-92e33dd05bbb"
+        },
+        {
+          "id": "993da888-f163-4eeb-8734-2cf25806f2f0",
+          "originalName": "CHANGELOG.md",
+          "filename": "de3f89ac-1934-404c-a458-86f9eaf99f2f.md",
+          "size": 180,
+          "url": "/uploads/de3f89ac-1934-404c-a458-86f9eaf99f2f.md"
+        },
+        {
+          "id": "6f6efdc3-6828-426f-b2f0-7dd03e323ee0",
+          "originalName": "eslint.config.js",
+          "filename": "fbdc8ed9-278c-4c27-a9bb-f6b1f672c775.js",
+          "size": 568,
+          "url": "/uploads/fbdc8ed9-278c-4c27-a9bb-f6b1f672c775.js"
+        },
+        {
+          "id": "b83a0220-21c6-4bea-b430-b26b5c0f6db7",
+          "originalName": "index.html",
+          "filename": "41992f26-643b-4ddb-b958-8d323b7f4c85.html",
+          "size": 359,
+          "url": "/uploads/41992f26-643b-4ddb-b958-8d323b7f4c85.html"
+        },
+        {
+          "id": "ee238f19-62c2-44d9-ae4b-2ad8a4a8849b",
+          "originalName": "package.json",
+          "filename": "e0b51ac6-a930-4b5d-af80-df216aa463ba.json",
+          "size": 961,
+          "url": "/uploads/e0b51ac6-a930-4b5d-af80-df216aa463ba.json"
+        },
+        {
+          "id": "9d5979bd-fa13-49fd-8daa-ad811566bfb5",
+          "originalName": "package-lock.json",
+          "filename": "c84609b2-3ec7-4ec9-a22c-54b4a930a45c.json",
+          "size": 173722,
+          "url": "/uploads/c84609b2-3ec7-4ec9-a22c-54b4a930a45c.json"
+        },
+        {
+          "id": "6853299d-01bf-45ea-8550-8e1487253fef",
+          "originalName": "README - Copy.md",
+          "filename": "41e4c320-7460-4ad8-a905-21a795844254.md",
+          "size": 1500,
+          "url": "/uploads/41e4c320-7460-4ad8-a905-21a795844254.md"
+        },
+        {
+          "id": "2f632aae-fe27-48f3-8541-b896bf2eba0c",
+          "originalName": "README.md",
+          "filename": "3ad08ee8-80cb-433c-8c44-65a468df6083.md",
+          "size": 1500,
+          "url": "/uploads/3ad08ee8-80cb-433c-8c44-65a468df6083.md"
+        },
+        {
+          "id": "9fe52cd0-a5ae-48a7-aabe-82e66de10f74",
+          "originalName": "vite.config.js",
+          "filename": "529cbd07-efb6-45f5-b848-68f0a84455fe.js",
+          "size": 161,
+          "url": "/uploads/529cbd07-efb6-45f5-b848-68f0a84455fe.js"
+        }
+      ],
+      "stars": 0,
+      "starredBy": [],
+      "views": 0,
+      "viewLog": {},
+      "published": false,
+      "status": "draft",
+      "slug": "resume-builder",
+      "publishedAt": null,
+      "createdAt": "2026-09-21T13:37:09.682Z",
+      "updatedAt": "2026-09-21T13:37:46.380Z"
+    }
+  ],
+  "issues": [],
+  "discussions": [],
+  "pullRequests": [],
+  "releases": [],
+  "activity": [
+    {
+      "id": "20490870-4fdb-4f49-9940-354fe391b946",
+      "username": "m",
+      "type": "file_uploaded",
+      "repository": "Resume builder",
+      "message": "Uploaded 11 file(s) to Resume builder",
+      "createdAt": "2026-09-21T13:37:46.380Z"
+    },
+    {
+      "id": "ba28f11b-cf21-4e29-baf5-fe64f66ffeb2",
+      "username": "m",
+      "type": "repository_created",
+      "repository": "Resume builder",
+      "message": "Created Resume builder",
+      "createdAt": "2026-09-21T13:37:09.682Z"
+    },
+    {
+      "id": "ed045614-5a86-458f-a56b-e2a79bc24949",
+      "username": "publish-1789971695588",
+      "type": "project_unpublished",
+      "repository": "Public Showcase",
+      "message": "Unpublished Public Showcase",
+      "createdAt": "2026-09-21T06:21:35.830Z"
+    },
+    {
+      "id": "d2bf03a9-c633-4410-9686-fcacc2fc33a4",
+      "username": "publish-1789971695588",
+      "type": "project_published",
+      "repository": "Public Showcase",
+      "message": "Published Public Showcase",
+      "createdAt": "2026-09-21T06:21:35.815Z"
+    },
+    {
+      "id": "38485c21-daa7-4e91-a506-2c44cf8a9f8b",
+      "username": "publish-1789971695588",
+      "type": "file_uploaded",
+      "repository": "Public Showcase",
+      "message": "Uploaded 1 file(s) to Public Showcase",
+      "createdAt": "2026-09-21T06:21:35.807Z"
+    },
+    {
+      "id": "61e29788-90a7-4765-ac29-deef41b0db29",
+      "username": "publish-1789971695588",
+      "type": "repository_created",
+      "repository": "Public Showcase",
+      "message": "Created Public Showcase",
+      "createdAt": "2026-09-21T06:21:35.638Z"
+    },
+    {
+      "id": "1f9e50ad-3318-4b2d-9baf-94e7d08e397b",
+      "username": "viewer-1789971695588",
+      "type": "signup",
+      "message": "Joined CodeFolio",
+      "createdAt": "2026-09-21T06:21:35.635Z"
+    },
+    {
+      "id": "277742b3-c37e-4ea6-b9cf-07c49eaf5078",
+      "username": "publish-1789971695588",
+      "type": "signup",
+      "message": "Joined CodeFolio",
+      "createdAt": "2026-09-21T06:21:35.626Z"
+    }
+  ]
+}
