@@ -297,6 +297,10 @@ app.post("/api/repositories", (req, res) => {
   const owner = String(req.body?.owner || "").trim().toLowerCase();
   const name = String(req.body?.name || "").trim();
   if (!owner || !name) return res.status(400).json({ error: "Owner and repository name are required." });
+  if (name.length > 100) return res.status(400).json({ error: "Repository name must be 100 characters or fewer." });
+  if (String(req.headers["x-codefolio-user"] || "").trim().toLowerCase() !== owner || !findUser(owner)) {
+    return res.status(401).json({ error: "Sign in to create a repository." });
+  }
   if (db.repositories.some(r => r.owner === owner && r.name.toLowerCase() === name.toLowerCase())) {
     return res.status(409).json({ error: "Repository already exists." });
   }
