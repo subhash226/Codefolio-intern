@@ -1,12 +1,17 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { Component, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import "./style.css";
 
 // Use Vite's proxy during development. In production, set VITE_API_URL to the
 // hosted backend URL or use the same origin behind a rewrite/proxy.
 const configuredApi = String(import.meta.env.VITE_API_URL || "").trim();
-const API = (configuredApi || (import.meta.env.DEV ? "/api" : `${window.location.origin}/api`)).replace(/\/$/, "");
-const getUser = () => { try { return JSON.parse(localStorage.getItem("cf_user") || "null"); } catch { return null; } };
+const API = (configuredApi || (import.meta.env.DEV ? "/api" : "https://codefolio-backend-rmad.onrender.com/api")).replace(/\/$/, "");
+const storage = {
+  get(key, fallback = "") { try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; } },
+  set(key, value) { try { localStorage.setItem(key, value); } catch {} },
+  remove(key) { try { localStorage.removeItem(key); } catch {} }
+};
+const getUser = () => { try { return JSON.parse(storage.get("cf_user", "null")); } catch { return null; } };
 const initials = value => String(value || "U").split(" ").map(part => part[0]).join("").slice(0, 2).toUpperCase();
 const date = value => value ? new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Recently";
 const api = async (path, options = {}) => {
@@ -21,7 +26,7 @@ const api = async (path, options = {}) => {
   }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(data.error || "Something went wrong. Please try again.");
-  if (path.includes("/publish") && data.repository?.owner && data.repository?.slug) localStorage.setItem("cf_published_url", `${window.location.origin}/${data.repository.owner}/${data.repository.slug}`);
+  if (path.includes("/publish") && data.repository?.owner && data.repository?.slug) storage.set("cf_published_url", `${window.location.origin}/${data.repository.owner}/${data.repository.slug}`);
   return data;
 };
 
@@ -30,15 +35,18 @@ function App() {
   const [route, setRoute] = useState(window.location.pathname);
   const [repos, setRepos] = useState([]);
   const [notice, setNotice] = useState("");
-  const [publishedUrl, setPublishedUrl] = useState(localStorage.getItem("cf_published_url") || "");
+  const [publishedUrl, setPublishedUrl] = useState(storage.get("cf_published_url"));
   const [loading, setLoading] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [theme, setTheme] = useState(localStorage.getItem("cf_theme") || "dark");
+  const [theme, setTheme] = useState(storage.get("cf_theme", "dark"));
   const [form, setForm] = useState({ name: "", username: "", email: "", password: "", repo: "", description: "" });
   const [authBusy, setAuthBusy] = useState(false);
 
   const refreshRepos = async () => {
-    try { setRepos(await api("/repositories")); }
+    try {
+      const data = await api("/repositories");
+      setRepos(Array.isArray(data) ? data : Array.isArray(data?.repositories) ? data.repositories : []);
+    }
     catch { setNotice("Server unavailable. Start the backend and try again."); }
     finally { setLoading(false); }
   };
@@ -48,13 +56,13 @@ function App() {
     window.addEventListener("popstate", onPop);
     return () => window.removeEventListener("popstate", onPop);
   }, []);
-    useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem("cf_theme", theme); }, [theme]);
+    useEffect(() => { document.documentElement.dataset.theme = theme; storage.set("cf_theme", theme); }, [theme]);
     useEffect(() => { const mount = document.createElement("div"); document.body.appendChild(mount); const root = createRoot(mount); root.render(<ChatBox />); return () => { root.unmount(); mount.remove(); }; }, []);
 
   const go = path => { window.history.pushState({}, "", path); setRoute(path); setMobileOpen(false); window.scrollTo(0, 0); };
   const back = () => window.history.length > 1 ? window.history.back() : go(user ? "/dashboard" : "/");
   const showNotice = message => { setNotice(message); window.setTimeout(() => setNotice(current => current === message ? "" : current), 4200); };
-  const saveSession = next => { localStorage.setItem("cf_user", JSON.stringify(next)); setUser(next); };
+  const saveSession = next => { storage.set("cf_user", JSON.stringify(next)); setUser(next); };
   const dashboardRepos = useMemo(() => user ? repos.filter(repo => repo.owner === user.username) : [], [repos, user]);
   const parts = route.split("/").filter(Boolean);
   const known = ["dashboard", "repositories", "new-repository", "profile", "settings", "notifications", "issues", "pull-requests", "discussions", "projects", "releases", "login", "signup", "explore", "resume", "contact"];
@@ -64,8 +72,8 @@ function App() {
   async function signup() { if (authBusy) return; setAuthBusy(true); try { const data = await api("/auth/signup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) }); saveSession(data.user); setForm(previous => ({ ...previous, password: "" })); showNotice("Account created."); go("/dashboard"); } catch (error) { showNotice(error.message); } finally { setAuthBusy(false); } }
   async function login() { if (authBusy) return; setAuthBusy(true); try { const data = await api("/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: form.email, password: form.password }) }); saveSession(data.user); setForm(previous => ({ ...previous, password: "" })); showNotice("Welcome back."); go("/dashboard"); } catch (error) { showNotice(error.message); } finally { setAuthBusy(false); } }
   async function createRepo() { if (!user) return go("/login"); const name = form.repo.trim(); if (!name) return showNotice("Enter a repository name."); try { const data = await api("/repositories", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ owner: user.username, name, description: form.description.trim() }) }); setRepos(previous => [...previous, data]); setForm(previous => ({ ...previous, repo: "", description: "" })); showNotice("Repository created."); go(`/${data.owner}/${data.slug || data.name}`); } catch (error) { showNotice(error.message); } }
-  async function unpublishProject(project) { try { await api(`/repositories/${project.id}/unpublish`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ owner: user.username }) }); localStorage.removeItem("cf_published_url"); setPublishedUrl(""); showNotice("Project unpublished. It is private again."); await refreshRepos(); } catch (error) { showNotice(error.message); } }
-  function logout() { localStorage.removeItem("cf_user"); setUser(null); showNotice("You have been signed out."); go("/"); }
+  async function unpublishProject(project) { try { await api(`/repositories/${project.id}/unpublish`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ owner: user.username }) }); storage.remove("cf_published_url"); setPublishedUrl(""); showNotice("Project unpublished. It is private again."); await refreshRepos(); } catch (error) { showNotice(error.message); } }
+  function logout() { storage.remove("cf_user"); setUser(null); showNotice("You have been signed out."); go("/"); }
 
   let view;
   if (loading && route === "/") view = <Loading />;
@@ -100,7 +108,7 @@ function Sidebar({ route, go, mobileOpen }) { const links = [["D", "Dashboard", 
 function MobileNav({ user, route, go }) { if (!user) return null; return <nav className="mobile-nav"><button className={route === "/dashboard" ? "active" : ""} onClick={() => go("/dashboard")}>Home<small>Home</small></button><button className={route === "/repositories" ? "active" : ""} onClick={() => go("/repositories")}>Repos<small>Repos</small></button><button className="mobile-add" onClick={() => go("/new-repository")}>+</button><button onClick={() => go("/notifications")}>Alerts<small>Alerts</small></button><button className={route === "/profile" ? "active" : ""} onClick={() => go(`/${user.username}`)}>Me<small>Profile</small></button></nav>; }
 
 function Home({ go, repos, user }) { const published = repos.filter(repo => repo.published && repo.visibility === "public"); return <><section className="hero"><div className="eyebrow">THE DEVELOPER WORKSPACE</div><h1>Ship work that<br /><em>speaks for itself.</em></h1><p>CodeFolio brings your repositories, profile, and projects into one polished home for your developer story.</p><div className="actions"><button className="primary" onClick={() => go(user ? "/dashboard" : "/signup")}>{user ? "Open workspace" : "Create your profile"} <span>-&gt;</span></button><button onClick={() => go("/explore")}>Explore projects</button></div><div className="hero-orbit"><span>01</span><span>BUILD</span><span>SHARE</span><span>GROW</span></div></section><section className="section"><div className="section-heading"><div><div className="eyebrow">COMMUNITY WORK</div><h2>Recently published</h2></div><button className="text-button" onClick={() => go("/explore")}>View all -&gt;</button></div>{published.length ? published.slice(0, 4).map(repo => <ProjectCard key={repo.id} repo={repo} go={go} />) : <Empty text="No published projects yet. Be the first to share your work." action="Create repository" onAction={() => go(user ? "/new-repository" : "/signup")} />}</section></>; }
-function Dashboard({ user, repos, go }) { return <><PageHeader eyebrow="WORKSPACE" title={`Good to see you, ${user?.name?.split(" ")[0] || "developer"}.`} text="A clear view of everything you are building." action="New repository" onAction={() => go("/new-repository")} /><div className="stats"><Stat label="Repositories" value={repos.length} icon="Repositories" /><Stat label="Published projects" value={repos.filter(repo => repo.published).length} icon="Projects" /><Stat label="Files uploaded" value={repos.reduce((total, repo) => total + repo.files.length, 0)} icon="Files" /></div><section className="panel"><div className="panel-heading"><div><div className="eyebrow">YOUR WORK</div><h2>Recent repositories</h2></div><button className="text-button" onClick={() => go("/repositories")}>View all -&gt;</button></div>{repos.length ? repos.map(repo => <ProjectCard key={repo.id} repo={repo} go={go} />) : <Empty text="Create your first repository to start building your developer portfolio." action="Create repository" onAction={() => go("/new-repository")} />}</section></>; }
+function Dashboard({ user, repos, go }) { return <><PageHeader eyebrow="WORKSPACE" title={`Good to see you, ${user?.name?.split(" ")[0] || "developer"}.`} text="A clear view of everything you are building." action="New repository" onAction={() => go("/new-repository")} /><div className="stats"><Stat label="Repositories" value={repos.length} icon="Repositories" /><Stat label="Published projects" value={repos.filter(repo => repo.published).length} icon="Projects" /><Stat label="Files uploaded" value={repos.reduce((total, repo) => total + (Array.isArray(repo.files) ? repo.files.length : 0), 0)} icon="Files" /></div><section className="panel"><div className="panel-heading"><div><div className="eyebrow">YOUR WORK</div><h2>Recent repositories</h2></div><button className="text-button" onClick={() => go("/repositories")}>View all -&gt;</button></div>{repos.length ? repos.map(repo => <ProjectCard key={repo.id} repo={repo} go={go} />) : <Empty text="Create your first repository to start building your developer portfolio." action="Create repository" onAction={() => go("/new-repository")} />}</section></>; }
 function Repositories({ repos, go }) { return <><PageHeader eyebrow="LIBRARY" title="Repositories" text="Your source code, organized for momentum." action="New repository" onAction={() => go("/new-repository")} /><section>{repos.length ? repos.map(repo => <ProjectCard key={repo.id} repo={repo} go={go} />) : <Empty text="No repositories yet." action="Create repository" onAction={() => go("/new-repository")} />}</section></>; }
 function NewRepo({ form, setForm, onCreate, back }) { const submit = event => { event.preventDefault(); onCreate(); }; return <section className="narrow"><BackButton onClick={back} /><form className="panel form-panel" onSubmit={submit}><div className="eyebrow">NEW REPOSITORY</div><h1>Start something worth sharing.</h1><p className="muted">Create a home for your next idea. You can upload files and publish it whenever it is ready.</p><label>Repository name<input value={form.repo} onChange={event => setForm(previous => ({ ...previous, repo: event.target.value }))} placeholder="my-awesome-project" required /></label><label>Description<input value={form.description} onChange={event => setForm(previous => ({ ...previous, description: event.target.value }))} placeholder="What does this project do?" /></label><div className="notice subtle">New repositories start public. You can adjust visibility from the project settings.</div><button className="primary wide" type="submit">Create repository <span>-&gt;</span></button></form></section>; }
 
@@ -250,5 +258,15 @@ function ChatBox() {
   return <div className="chat-widget"><button className="chat-launcher" aria-label="Open AI assistant" onClick={() => setOpen(!open)}>{open ? "Close" : "AI"}</button>{open && <section className="chat-panel" aria-label="AI assistant"><div className="chat-header"><div><strong>CodeFolio Assistant</strong><small>Workspace help</small></div><button aria-label="Close chat" onClick={() => setOpen(false)}>x</button></div><div className="chat-messages">{messages.map((item, index) => <p className={item.role} key={`${item.role}-${index}`}>{item.text}</p>)}</div><form className="chat-form" onSubmit={send}><input value={message} onChange={event => setMessage(event.target.value)} placeholder="Ask about your workspace" aria-label="Ask the assistant" /><button className="primary" type="submit">Send</button></form></section>}</div>;
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+class ErrorBoundary extends Component {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error) { console.error("CodeFolio failed to render", error); }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return <main className="content error-page"><section className="empty-page"><div className="empty-icon">Error</div><h1>CodeFolio could not load</h1><p>Please refresh the page and try again. Your saved work is still safe.</p><button className="primary" onClick={() => window.location.reload()}>Refresh page</button></section></main>;
+  }
+}
+
+createRoot(document.getElementById("root")).render(<ErrorBoundary><App /></ErrorBoundary>);
 
