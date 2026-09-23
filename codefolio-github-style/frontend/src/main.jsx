@@ -2,10 +2,10 @@
 import { createRoot } from "react-dom/client";
 import "./style.css";
 
-// Use Vite's proxy during development. Built files can point to the backend
-// with VITE_API_URL, or use the local backend when opened directly.
+// Use Vite's proxy during development. In production, set VITE_API_URL to the
+// hosted backend URL or use the same origin behind a rewrite/proxy.
 const configuredApi = String(import.meta.env.VITE_API_URL || "").trim();
-const API = (configuredApi || (import.meta.env.DEV ? "/api" : "http://localhost:5000/api")).replace(/\/$/, "");
+const API = (configuredApi || (import.meta.env.DEV ? "/api" : `${window.location.origin}/api`)).replace(/\/$/, "");
 const getUser = () => { try { return JSON.parse(localStorage.getItem("cf_user") || "null"); } catch { return null; } };
 const initials = value => String(value || "U").split(" ").map(part => part[0]).join("").slice(0, 2).toUpperCase();
 const date = value => value ? new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "Recently";

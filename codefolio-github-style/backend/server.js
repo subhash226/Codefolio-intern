@@ -7,6 +7,7 @@ import crypto from "crypto";
 
 const app = express();
 const PORT = Number(process.env.PORT || 5000);
+const isVercelRuntime = Boolean(process.env.VERCEL);
 const uploadDir = path.resolve("uploads");
 fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -484,4 +485,9 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: "Server error." });
 });
 
-app.listen(PORT, () => console.log(`CodeFolio API running at http://localhost:${PORT}`));
+if (!isVercelRuntime) {
+  app.listen(PORT, () => console.log(`CodeFolio API running at http://localhost:${PORT}`));
+}
+
+export { app };
+export default app;
